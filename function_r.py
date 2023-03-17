@@ -2,7 +2,8 @@
 import random
 
 # only playing on 3 X 3 board
-GAME_BOARD = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
+# GAME_BOARD = [['_', '_', '_'], ['_', '_', '_'], ['_', '_', '_']]
+GAME_BOARD = ['_', '_', '_', '_', '_', '_', '_', '_', '_']
 # the first 3 items  represent rows 1 - 3 in the board  ,  the next 3  1 - 3 columns
 # the 7 position is for diagonal left to right and 8 pos for the diagonal right to left
 VICTORY_X = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -37,11 +38,15 @@ def computer_play_r():
     for i in range(0, board_s):
         for j in range(0, board_s):
             bord_1[f'{i}-{j}'] = GAME_BOARD[i][j]
+            if GAME_BOARD[i][j] == '_' and i == -1:
+                row1 = i
+                col1 = j
     print(bord_1)
     empty_spaces = bord_1.values()
     print(empty_spaces)
-    random.choice(empty_spaces)
-    return i, j
+    # random.choice(empty_spaces)
+    return row1, col1
+
 
 def computer_play():
     global VICTORY_X
