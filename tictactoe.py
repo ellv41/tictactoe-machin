@@ -29,16 +29,21 @@ GAME_STATUS_MAP = [[0, 1, 2],
 # the 7 position is for diagonal left to right and 8 pos for the diagonal right to left
 PLAYER1 = 'X'
 PLAYER2 = 'O'
-SIZE = ['0', '1', '2']
+SIZE = ['1', '2', '3']
 COMPUTER = 'C'
 HUMAN = 'H'
 FREE_SPC = '_'
+U_find_win_bloc = False
 LOGO = """
-************* PLAY ******************
-X O X
-O X O
-X O O
-******** TIC   TAC   TOE ************  """
+
+*****  GAME OF * TIC TAC TOE *****
+            X O X
+            O X O
+            X O O
+**********************************  
+
+
+"""
 
 
 def grade_moves(match_win):
@@ -119,23 +124,23 @@ def computer_play(plyer):
     # PLAYER1 (X) will play with machine learning 
     if player == PLAYER1:            
         # if next move is a certain win or block , dont search the data base
-        # pos = find_win_bloc_move(plyer)
+        if U_find_win_bloc:
+            pos = find_win_bloc_move(plyer)
         if pos == -1:
-            grd = -500
-            for spc_free in empty_i:
-                t_pos , mov_grade = find_best_move(spc_free)
-                if grd < mov_grade and t_pos != -1:
-                    grd = mov_grade
-                    pos = t_pos
-            # if pos != -1:
-                # print(f'move grade = {grd}  pos = {pos}')        
-                # xy = input("enter")
-            if pos == -1 or grd < 2:
+            grd = -10
+            if len(DATA_SET) > 0:
+                for spc_free in empty_i:
+                    t_pos , mov_grade = find_best_move(spc_free)
+                    if grd < mov_grade and t_pos != -1:
+                        grd = mov_grade
+                        pos = t_pos
+                # if pos != -1:
+                    # print(f'move grade = {grd}  pos = {pos}')        
+                    # xy = input("enter")
+            if pos == -1 or grd < 1:
                 # if no good move found in data base , take a random move       
                 pos = random.choice(empty_i)
         GAME_DATA.append([pos, GAME_BOARD.copy(), 0])
-            # [print(f'GAME_DATA =  {g_d}') for g_d in GAME_DATA]
-            # print(f'game move {[pos, GAME_BOARD.copy(), 0]}')
     elif player == PLAYER2:            
         # pos = find_win_bloc_move(plyer)
         if pos == -1:
@@ -152,15 +157,17 @@ def play_move(plyer, opponent):
         index = computer_play(plyer)
     else:
         while not legal:
-            row = input(f'select row number  0-2 : ')
-            col = input(f'select col number  0-2 : ')
+            row = input(f'select row number  1-3 : ')
+            col = input(f'select col number  1-3 : ')
             if row.isnumeric() and col.isnumeric() and row in SIZE and col in SIZE:
-                index = (int(row) * 3) + int(col)
+                index = ((int(row)-1) * 3) + int(col) - 1
                 if GAME_BOARD[index] == '_':
                     legal = True
                 else:
                     print(f'select an empty place')
             else:
+                if row in ('X', 'x') or col in ('X', 'x'):
+                    return -1
                 print(f'enter only numbers ({SIZE})')
                 legal = False
     GAME_BOARD[index] = plyer
@@ -180,7 +187,7 @@ def check_board(ply1):
         if vic.count(PLAYER2) >= 3:
              return PLAYER2
     if GAME_BOARD.count(FREE_SPC) == 0:
-        return 'D'         
+        return 'Draw'         
     return 0
 
 
@@ -188,7 +195,7 @@ def print_bord():
     global GAME_BOARD
     print("")
     for i in range(0, len(GAME_BOARD), 3):
-        print(f'|  {GAME_BOARD[i]}  |  {GAME_BOARD[i+1]}  |  {GAME_BOARD[i+2]}  |\n')
+        print(f'|  {GAME_BOARD[i]}  |  {GAME_BOARD[i+1]}  |  {GAME_BOARD[i+2]}  | \n')
 
 
 def reset_board():
@@ -199,11 +206,10 @@ def reset_board():
 ########### main ######
 
 if __name__ == "__main__":    
-    game = 1
-    win_x = 0
-    win_O = 0
-    no_winer = 0
-    display = True
+    game = 1 ; num_games = 1 ; win_x = 0
+    win_O = 0 ;  no_winer = 0
+    display_lvl = 3
+    print('\n\n\n\n\n\n')
     print(LOGO)
     if len(DATA_SET) == 0 and os.path.exists("DATA_SET.txt"):
         f = open("DATA_SET.txt","r")
@@ -218,6 +224,7 @@ if __name__ == "__main__":
                     data1 = [int(data1[0]),bord_r,int(data1[2])]
                     DATA_SET.append(data1)
         f.close()    
+        # os.remove("DATA_SET.txt")
     player = PLAYER1
     opponent1 = input("for first opponent computer press C : ").upper()
     opponent2 = input("for first opponent computer press C : ").upper()
@@ -229,22 +236,32 @@ if __name__ == "__main__":
             num_games = int(num_games)
         else:
             num_games = 50    
-        display = False
+        display_lvl = 1     
+        if  num_games <= 5:
+            display_lvl = 3
+        elif num_games <= 10:  
+            display_lvl = 2
     if opponent1 != COMPUTER:
         opponent1 = HUMAN
     if opponent2 != COMPUTER:
         opponent2 = HUMAN
-
-
+    if opponent1 == COMPUTER and input("use win or block function for comp X : press Y  ").upper() == 'Y':
+        U_find_win_bloc = True
+    x_opens = 0
+# Games loop
     while True:
         player = random.choice([PLAYER1,PLAYER2])
+        # player = PLAYER1
         game_over = False
         # start the game first move is  played by X (C)
         reset_board()
         game_status = 0
-        opponent = opponent1
+        player_opens = player 
+        if player == PLAYER1: x_opens += 1
+# Single Game Loop        
         while not game_over:
-            if display:
+            if display_lvl == 3:
+                print_bord()
                 print(f'player {player} your turn')
             if GAME_BOARD.count(FREE_SPC) > 0:
                 if player == PLAYER1:
@@ -258,27 +275,33 @@ if __name__ == "__main__":
                         win_x += 1
                     else:
                         win_O += 1    
-                    if display:    
+                    if display_lvl == 3:    
+                        print_bord()
                         print(f'\n ****** And the Winner is ********* player-{game_status}')
                     game_over = True
             else:
-                if display:
-                    print(f'no more moves the board is full @@@@@@@ its a tie @@@@@@@@')
+                if display_lvl == 3:
+                    print_bord()
+                    print(f'no more moves the board is full @@@@@@@ its a tie @@@@@@@@')                    
                 no_winer += 1
                 game_over = True
-            if display:    
-                print_bord()
+            if game_status == -1:    
+                game_over = True
         grade_moves(game_status)
         GAME_DATA.clear()
         if opponent1 != COMPUTER or opponent2 != COMPUTER:
             if input('want another game press Y : ').upper() != 'Y':
                 break
-        if display:    
-            print('\n***********************************************************\n')
-            print(f'   NEW GMAE  ***  game number:{game} of {num_games}\n')
-            print('\n***********************************************************')
-        if game >= num_games:
-            break
+        else:
+            if display_lvl > 1:
+                print_bord()
+                print(f'\n Game Winer = {game_status} - player_opens = {player_opens}')
+                print('\n***********************************************************')
+                print(f'       END GMAE    Game :{game} of {num_games}')
+                print('***********************************************************')
+            if game >= num_games:
+                break
         game += 1
-    print(f' win_x = {win_x}\n win_O = {win_O}\n no_winer = {no_winer}\n')        
+    print(f'\n**************** Games Sumery **************** \n\n Games Plyed = {num_games}\n')    
+    print(f'X wins  =  {win_x} - x opens = {x_opens} times \nO wins  =  {win_O}\nno_winer = {no_winer}\n')        
 # end Main
