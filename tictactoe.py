@@ -206,6 +206,7 @@ def reset_board():
 ########### main ######
 
 if __name__ == "__main__":    
+    computer_playes = False
     game = 1 ; num_games = 1 ; win_x = 0
     win_O = 0 ;  no_winer = 0
     display_lvl = 3
@@ -231,6 +232,7 @@ if __name__ == "__main__":
     # opponent1 = COMPUTER
     # opponent2 = COMPUTER
     if opponent1 == COMPUTER and opponent2 == COMPUTER:
+        computer_playes = True
         num_games = input("enter number of games for computer : ")
         if num_games.isnumeric():
             num_games = int(num_games)
@@ -289,7 +291,8 @@ if __name__ == "__main__":
                 game_over = True
         grade_moves(game_status)
         GAME_DATA.clear()
-        if opponent1 != COMPUTER or opponent2 != COMPUTER:
+        game += 1
+        if not computer_playes:
             if input('want another game press Y : ').upper() != 'Y':
                 break
         else:
@@ -299,9 +302,12 @@ if __name__ == "__main__":
                 print('\n***********************************************************')
                 print(f'       END GMAE    Game :{game} of {num_games}')
                 print('***********************************************************')
-            if game >= num_games:
-                break
-        game += 1
+        if game >= num_games and computer_playes:
+            break
     print(f'\n**************** Games Sumery **************** \n\n Games Plyed = {num_games}\n')    
-    print(f'X wins  =  {win_x} - x opens = {x_opens} times \nO wins  =  {win_O}\nno_winer = {no_winer}\n')        
+    print(f'X wins  =  {win_x} - x opens = {x_opens} times \nO wins  =  {win_O}\nno_winer = {no_winer}\n')  
+    if computer_playes:
+        input('to close the program press Enter')
+    
+        
 # end Main
