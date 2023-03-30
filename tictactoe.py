@@ -33,7 +33,6 @@ SIZE = ['1', '2', '3']
 COMPUTER = 'C'
 HUMAN = 'H'
 FREE_SPC = '_'
-U_find_win_bloc = False
 LOGO = """
 
 *****  GAME OF * TIC TAC TOE *****
@@ -124,8 +123,6 @@ def computer_play(plyer):
     # PLAYER1 (X) will play with machine learning 
     if player == PLAYER1:            
         # if next move is a certain win or block , dont search the data base
-        if U_find_win_bloc:
-            pos = find_win_bloc_move(plyer)
         if pos == -1:
             grd = -10
             if len(DATA_SET) > 0:
@@ -134,9 +131,6 @@ def computer_play(plyer):
                     if grd < mov_grade and t_pos != -1:
                         grd = mov_grade
                         pos = t_pos
-                # if pos != -1:
-                    # print(f'move grade = {grd}  pos = {pos}')        
-                    # xy = input("enter")
             if pos == -1 or grd < 1:
                 # if no good move found in data base , take a random move       
                 pos = random.choice(empty_i)
@@ -175,9 +169,9 @@ def play_move(plyer, opponent):
 
 
 def check_board(ply1):
-    global GAME_BOARD
-    global GAME_STATUS_MAP
-    global GAME_STATUS_VAL
+    # global GAME_BOARD
+    # global GAME_STATUS_MAP
+    # global GAME_STATUS_VAL
     for i in range(0, 8):
         for j in range(0, 3):
             GAME_STATUS_VAL[i][j] = GAME_BOARD[GAME_STATUS_MAP[i][j]]
@@ -205,109 +199,104 @@ def reset_board():
 
 ########### main ######
 
-if __name__ == "__main__":    
-    computer_playes = False
-    game = 1 ; num_games = 1 ; win_x = 0
-    win_O = 0 ;  no_winer = 0
-    display_lvl = 3
-    print('\n\n\n\n\n\n')
-    print(LOGO)
-    if len(DATA_SET) == 0 and os.path.exists("DATA_SET.txt"):
-        f = open("DATA_SET.txt","r")
-        data = f.read()
-        if len(data) > 0: 
-            records = data.split("\n")
-            data1 = []
-            for record in records:
-                if len(record) > 1:
-                    data1 = record.split("@")
-                    bord_r = list(data1[1].split(","))
-                    data1 = [int(data1[0]),bord_r,int(data1[2])]
-                    DATA_SET.append(data1)
-        f.close()    
-        # os.remove("DATA_SET.txt")
-    player = PLAYER1
-    opponent1 = input("for first opponent computer press C : ").upper()
-    opponent2 = input("for first opponent computer press C : ").upper()
-    # opponent1 = COMPUTER
-    # opponent2 = COMPUTER
-    if opponent1 == COMPUTER and opponent2 == COMPUTER:
-        computer_playes = True
-        num_games = input("enter number of games for computer : ")
-        if num_games.isnumeric():
-            num_games = int(num_games)
-        else:
-            num_games = 50    
-        display_lvl = 1     
-        if  num_games <= 5:
-            display_lvl = 3
-        elif num_games <= 10:  
-            display_lvl = 2
-    if opponent1 != COMPUTER:
-        opponent1 = HUMAN
-    if opponent2 != COMPUTER:
-        opponent2 = HUMAN
-    if opponent1 == COMPUTER and input("use win or block function for comp X : press Y  ").upper() == 'Y':
-        U_find_win_bloc = True
-    x_opens = 0
+computer_playes = False
+game = 1 ; num_games = 1 ; win_x = 0
+win_O = 0 ;  no_winer = 0
+display_lvl = 3
+print('\n\n\n')
+print(LOGO)
+if len(DATA_SET) == 0 and os.path.exists("DATA_SET.txt"):
+    f = open("DATA_SET.txt","r")
+    data = f.read()
+    if len(data) > 0: 
+        records = data.split("\n")
+        data1 = []
+        for record in records:
+            if len(record) > 1:
+                data1 = record.split("@")
+                bord_r = list(data1[1].split(","))
+                data1 = [int(data1[0]),bord_r,int(data1[2])]
+                DATA_SET.append(data1)
+    f.close()    
+    # os.remove("DATA_SET.txt")
+player = PLAYER1
+opponent1 = input("for first opponent computer press C : ").upper()
+opponent2 = input("for second opponent computer press C : ").upper()
+if opponent1 == COMPUTER and opponent2 == COMPUTER:
+    computer_playes = True
+    num_games = input("enter number of games for computer : ")
+    if num_games.isnumeric():
+        num_games = int(num_games)
+    else:
+        num_games = 50    
+    display_lvl = 1     
+    if  num_games <= 5:
+        display_lvl = 3
+    elif num_games <= 10:  
+        display_lvl = 2
+if opponent1 != COMPUTER:
+    opponent1 = HUMAN
+if opponent2 != COMPUTER:
+    opponent2 = HUMAN
+x_opens = 0
 # Games loop
-    while True:
-        player = random.choice([PLAYER1,PLAYER2])
-        # player = PLAYER1
-        game_over = False
-        # start the game first move is  played by X (C)
-        reset_board()
-        game_status = 0
-        player_opens = player 
-        if player == PLAYER1: x_opens += 1
+while True:
+    player = random.choice([PLAYER1,PLAYER2])
+    # player = PLAYER1
+    game_over = False
+    # start the game first move is  played by X (C)
+    reset_board()
+    game_status = 0
+    player_opens = player 
+    if player == PLAYER1: x_opens += 1
+    if display_lvl == 3: print_bord() 
 # Single Game Loop        
-        while not game_over:
+    while not game_over:
+        if display_lvl == 3: print(f'player {player} your turn')
+        if GAME_BOARD.count(FREE_SPC) > 0:
+            if player == PLAYER1:
+                game_status = play_move(player, opponent1)
+                player = PLAYER2
+            else:
+                game_status = play_move(player, opponent2)
+                player = PLAYER1
+            if display_lvl == 3:  print_bord()     
+            if game_status in (PLAYER1, PLAYER2):
+                if game_status == PLAYER1:
+                    win_x += 1
+                else:
+                    win_O += 1    
+                if display_lvl == 3:    
+                    print(f'\n ****** And the Winner is ********* player-{game_status}')
+                game_over = True
+        else:
             if display_lvl == 3:
                 print_bord()
-                print(f'player {player} your turn')
-            if GAME_BOARD.count(FREE_SPC) > 0:
-                if player == PLAYER1:
-                    game_status = play_move(player, opponent1)
-                    player = PLAYER2
-                else:
-                    game_status = play_move(player, opponent2)
-                    player = PLAYER1
-                if game_status in (PLAYER1, PLAYER2):
-                    if game_status == PLAYER1:
-                        win_x += 1
-                    else:
-                        win_O += 1    
-                    if display_lvl == 3:    
-                        print_bord()
-                        print(f'\n ****** And the Winner is ********* player-{game_status}')
-                    game_over = True
-            else:
-                if display_lvl == 3:
-                    print_bord()
-                    print(f'no more moves the board is full @@@@@@@ its a tie @@@@@@@@')                    
-                no_winer += 1
-                game_over = True
-            if game_status == -1:    
-                game_over = True
-        grade_moves(game_status)
-        GAME_DATA.clear()
-        game += 1
-        if not computer_playes:
-            if input('want another game press Y : ').upper() != 'Y':
-                break
-        else:
-            if display_lvl > 1:
-                print_bord()
-                print(f'\n Game Winer = {game_status} - player_opens = {player_opens}')
-                print('\n***********************************************************')
-                print(f'       END GMAE    Game :{game} of {num_games}')
-                print('***********************************************************')
-        if game >= num_games and computer_playes:
+                print(f'no more moves the board is full @@@@@@@ its a tie @@@@@@@@')                    
+            no_winer += 1
+            game_over = True
+        if game_status == -1:    
+            game_over = True
+    grade_moves(game_status)
+    GAME_DATA.clear()
+    if not computer_playes:
+        if input('want another game press Y : ').upper() != 'Y':
             break
-    print(f'\n**************** Games Sumery **************** \n\n Games Plyed = {num_games}\n')    
-    print(f'X wins  =  {win_x} - x opens = {x_opens} times \nO wins  =  {win_O}\nno_winer = {no_winer}\n')  
-    if computer_playes:
-        input('to close the program press Enter')
+    else:
+        if display_lvl > 2:
+            print(f'\n Game Winer = {game_status} - player_opens = {player_opens}')
+            print('\n***********************************************************')
+            print(f'       END GMAE    Game :{game} of {num_games}')
+            print('***********************************************************')
+    if game >= num_games and computer_playes:
+        break
+    game += 1
+percnt_x = int(win_x / num_games * 100)
+percnt_o = int(win_O / num_games * 100)
+draw = int(no_winer / num_games * 100 )
+print(f'\n**************** Games Sumery **************** \n\n Games Plyed = {num_games}\n')    
+print(f'X wins = {win_x} times - winning percent = {percnt_x}%  opens = {x_opens} times\n')
+print(f'O wins = {win_O}  winning percent = {percnt_o}% \nno_winer = {no_winer} - {draw}% \n')  
     
         
 # end Main
