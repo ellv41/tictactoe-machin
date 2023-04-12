@@ -1,5 +1,6 @@
 import random
 import os
+from time import sleep
 
 GAME_BOARD = ['_', '_', '_', '_', '_', '_', '_', '_', '_']
 
@@ -25,8 +26,6 @@ GAME_STATUS_MAP = [[0, 1, 2],
                    [2, 4, 6]]
 
 
-# the first 3 items  represent rows 1 - 3 in the board  ,  the next 3  1 - 3 columns
-# the 7 position is for diagonal left to right and 8 pos for the diagonal right to left
 PLAYER1 = 'X'
 PLAYER2 = 'O'
 SIZE = ['1', '2', '3']
@@ -64,21 +63,25 @@ def grade_moves(match_win):
             for d_set in DATA_SET:
                 if g_Dt[0] == d_set[0] and g_Dt[1] == d_set[1]:
                     state_found = True
-                    d_set[2] += grade
+                    d_set[2] = min(d_set[2]+grade,1000)
             if state_found == False:
                 DATA_SET.append(g_Dt)                
-        f = open("DATA_SET.txt","w")
+
+
+def write_to_file():
+    with open("DATA_SET.txt","w") as file:
+        file = open("DATA_SET.txt","w")
         t_rec = ""
+        block = ""
         for set1 in DATA_SET:
             for sq in set1[1]:
                 t_rec += str(f'{sq},')    
             b_rec = t_rec[0:len(t_rec)-1]
-            str_rec = str(set1[0])+"@"+b_rec+"@"+str(set1[2])+"\n"
+            # str_rec = str(set1[0])+"@"+b_rec+"@"+str(set1[2])+"\n"
+            block += str(set1[0])+"@"+b_rec+"@"+str(set1[2])+"\n"
             t_rec = ""
             b_rec = ""
-            f.write(str_rec) 
-        f.close()
-    # [print(f'data set = {x}') for x in DATA_SET]
+        file.write(block) 
 
 
 def find_win_bloc_move(me):
@@ -89,25 +92,25 @@ def find_win_bloc_move(me):
     else:
         him = PLAYER1
     move = -1
-    for g1 in range(0, 8):
+    for g1 in range(8):
         if GAME_STATUS_VAL[g1].count(me) == 2 and GAME_STATUS_VAL[g1].count('_') == 1:
             move = GAME_STATUS_MAP[g1][GAME_STATUS_VAL[g1].index('_')]
             return move
-    for g1 in range(0, 8):
+    for g1 in range(8):
         if GAME_STATUS_VAL[g1].count(him) == 2 and GAME_STATUS_VAL[g1].count('_') == 1:
             move = GAME_STATUS_MAP[g1][GAME_STATUS_VAL[g1].index('_')]
             return move        
     return move
 
 
-def find_best_move(move_c):
+def find_move_grade(move_c):
     global DATA_SET
     global GAME_BOARD
     grd_move = -1
     next_mov = -1
     if len(DATA_SET) > 0:
         for m1 in  DATA_SET:
-            if m1[1] == GAME_BOARD and move_c == m1[0]: # and m1[2] > grd_move:
+            if m1[1] == GAME_BOARD and move_c == m1[0]:
                 return m1[0] , m1[2]
     return next_mov , grd_move
 
@@ -123,11 +126,12 @@ def computer_play(plyer):
     # PLAYER1 (X) will play with machine learning 
     if player == PLAYER1:            
         # if next move is a certain win or block , dont search the data base
+        # pos = find_win_bloc_move(plyer)
         if pos == -1:
             grd = -10
             if len(DATA_SET) > 0:
                 for spc_free in empty_i:
-                    t_pos , mov_grade = find_best_move(spc_free)
+                    t_pos , mov_grade = find_move_grade(spc_free)
                     if grd < mov_grade and t_pos != -1:
                         grd = mov_grade
                         pos = t_pos
@@ -136,7 +140,7 @@ def computer_play(plyer):
                 pos = random.choice(empty_i)
         GAME_DATA.append([pos, GAME_BOARD.copy(), 0])
     elif player == PLAYER2:            
-        # pos = find_win_bloc_move(plyer)
+        pos = find_win_bloc_move(plyer)
         if pos == -1:
             pos = random.choice(empty_i)
     return pos
@@ -151,8 +155,9 @@ def play_move(plyer, opponent):
         index = computer_play(plyer)
     else:
         while not legal:
-            row = input(f'select row number  1-3 : ')
-            col = input(f'select col number  1-3 : ')
+            chios = input(f'select row & col number like 1 3 : ').split(' ')
+            row = chios[0] 
+            col = chios[1] if len(chios) > 1 else '0'
             if row.isnumeric() and col.isnumeric() and row in SIZE and col in SIZE:
                 index = ((int(row)-1) * 3) + int(col) - 1
                 if GAME_BOARD[index] == '_':
@@ -169,9 +174,6 @@ def play_move(plyer, opponent):
 
 
 def check_board(ply1):
-    # global GAME_BOARD
-    # global GAME_STATUS_MAP
-    # global GAME_STATUS_VAL
     for i in range(0, 8):
         for j in range(0, 3):
             GAME_STATUS_VAL[i][j] = GAME_BOARD[GAME_STATUS_MAP[i][j]]
@@ -197,31 +199,37 @@ def reset_board():
     for i in range(0, 9):
         GAME_BOARD[i] = '_'
 
-########### main ######
 
+def read_data_file():
+    global DATA_SET
+    if len(DATA_SET) == 0 and os.path.exists("DATA_SET.txt"):
+        with open("DATA_SET.txt","r") as file:
+            data = file.read()
+            if len(data) > 0: 
+                records = data.split("\n")
+                data1 = []
+                for record in records:
+                    if len(record) > 1:
+                        data1 = record.split("@")
+                        bord_r = list(data1[1].split(","))
+                        data1 = [int(data1[0]),bord_r,int(data1[2])]
+                        DATA_SET.append(data1)
+
+
+
+########### main ######
+read_data_file()
 computer_playes = False
 game = 1 ; num_games = 1 ; win_x = 0
 win_O = 0 ;  no_winer = 0
 display_lvl = 3
 print('\n\n\n')
 print(LOGO)
-if len(DATA_SET) == 0 and os.path.exists("DATA_SET.txt"):
-    f = open("DATA_SET.txt","r")
-    data = f.read()
-    if len(data) > 0: 
-        records = data.split("\n")
-        data1 = []
-        for record in records:
-            if len(record) > 1:
-                data1 = record.split("@")
-                bord_r = list(data1[1].split(","))
-                data1 = [int(data1[0]),bord_r,int(data1[2])]
-                DATA_SET.append(data1)
-    f.close()    
-    # os.remove("DATA_SET.txt")
 player = PLAYER1
 opponent1 = input("for first opponent computer press C : ").upper()
 opponent2 = input("for second opponent computer press C : ").upper()
+# opponent1 = 'C'
+# opponent2 = 'C'
 if opponent1 == COMPUTER and opponent2 == COMPUTER:
     computer_playes = True
     num_games = input("enter number of games for computer : ")
@@ -252,7 +260,9 @@ while True:
     if display_lvl == 3: print_bord() 
 # Single Game Loop        
     while not game_over:
-        if display_lvl == 3: print(f'player {player} your turn')
+        if display_lvl == 3:
+            print(f'player {player} your turn')
+            if computer_playes: sleep(2)
         if GAME_BOARD.count(FREE_SPC) > 0:
             if player == PLAYER1:
                 game_status = play_move(player, opponent1)
@@ -291,12 +301,15 @@ while True:
     if game >= num_games and computer_playes:
         break
     game += 1
+write_to_file()    
 percnt_x = int(win_x / num_games * 100)
 percnt_o = int(win_O / num_games * 100)
 draw = int(no_winer / num_games * 100 )
-print(f'\n**************** Games Sumery **************** \n\n Games Plyed = {num_games}\n')    
-print(f'X wins = {win_x} times - winning percent = {percnt_x}%  opens = {x_opens} times\n')
-print(f'O wins = {win_O}  winning percent = {percnt_o}% \nno_winer = {no_winer} - {draw}% \n')  
+print(f'\n**************** Games Sumery **************** \n\n {num_games} Games Plyed\n')    
+print(f'X wins {win_x} times - {percnt_x}%\n')
+print(f'O wins {win_O} times - {percnt_o}% \n')
+print(f'No winer {no_winer} times - {draw}% \n')  
     
         
 # end Main
+22
