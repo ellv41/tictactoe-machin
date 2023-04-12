@@ -32,7 +32,7 @@ the move will be saved in the folowing format :
 
 first value is the position for the next move by player X
 second is a list reprisenting the Game Board before the move of player X
-third value is the grade acumilated for this move 
+third value is the grade acumelated for this move 
 
 
 
