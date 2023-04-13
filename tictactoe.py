@@ -48,11 +48,11 @@ def grade_moves(match_win):
     global DATA_SET
     global GAME_DATA
     if match_win == PLAYER1:
-        grade = 3
+        grade = 4
     elif match_win == PLAYER2:
-        grade = -1
+        grade = -2
     else:
-        grade = 1
+        grade = 0
     for g_dat in GAME_DATA:
         g_dat[2] += grade
     if len(DATA_SET) == 0:
@@ -111,6 +111,7 @@ def find_move_grade(move_c):
     if len(DATA_SET) > 0:
         for m1 in  DATA_SET:
             if m1[1] == GAME_BOARD and move_c == m1[0]:
+                # print(f'{m1}')
                 return m1[0] , m1[2]
     return next_mov , grd_move
 
@@ -135,7 +136,7 @@ def computer_play(plyer):
                     if grd < mov_grade and t_pos != -1:
                         grd = mov_grade
                         pos = t_pos
-            if pos == -1 or grd < 1:
+            if pos == -1: # or grd < 1:
                 # if no good move found in data base , take a random move       
                 pos = random.choice(empty_i)
         GAME_DATA.append([pos, GAME_BOARD.copy(), 0])
@@ -309,7 +310,12 @@ print(f'\n**************** Games Sumery **************** \n\n {num_games} Games 
 print(f'X wins {win_x} times - {percnt_x}%\n')
 print(f'O wins {win_O} times - {percnt_o}% \n')
 print(f'No winer {no_winer} times - {draw}% \n')  
-    
+with open("sumery.txt","a")  as sumery:
+    sumery.write(f'Games Sumery: {num_games} Games Plyed  p1={opponent1} p2={opponent2}\n')
+    sumery.write(f'X wins {percnt_x}%\n')
+    sumery.write(f'O wins {percnt_o}% \n')
+    sumery.write(f'Draw  {draw}% \n')  
+      
         
 # end Main
 22
