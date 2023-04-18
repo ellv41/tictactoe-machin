@@ -1,5 +1,5 @@
-<font color="red"> tictactoe-machin By  Eli Levy main</font>
-Machin learning tic tac toe   3 X 3
+tictactoe-machin By  Eli Levy main 
+<font color="red"> Machin learning tic tac toe   3 X 3 </font>
 
 
 if you select first oppnent = C (computer)
