@@ -1,6 +1,14 @@
 tictactoe-machin By  Eli Levy main 
 <font color="red"> Machin learning tic tac toe   3 X 3 </font>
+<figure>
+    <img src="/assets/images/albuquerque.jpg"
+         alt="Albuquerque, New Mexico">
+    <figcaption>A single track trail outside of Albuquerque, New Mexico.</figcaption>
+</figure>
 
+<font color="red">
+Machin learning tic tac toe   3 X 3 
+</font>
 
 if you select first oppnent = C (computer)
 
