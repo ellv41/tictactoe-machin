@@ -1,6 +1,7 @@
 # tictactoe-machin By Eli Levy
 Machin learning tic tac toe   3 X 3
 
+
 if you select first oppnent = C (computer)
 
 player X will learn by machin learning
