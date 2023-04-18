@@ -1,4 +1,4 @@
-<font color=red># tictactoe-machin By  Eli Levy main</font>
+<font color=red> tictactoe-machin By  Eli Levy main</font>
 Machin learning tic tac toe   3 X 3
 
 
