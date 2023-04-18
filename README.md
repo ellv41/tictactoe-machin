@@ -1,4 +1,4 @@
-# tictactoe-machin By  Eli Levy
+# tictactoe-machin By  Eli Levy dev
 Machin learning tic tac toe   3 X 3
 
 
