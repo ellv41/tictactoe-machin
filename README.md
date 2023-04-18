@@ -1,4 +1,4 @@
-# tictactoe-machin
+# tictactoe-machin BY Eli Levy
 Machin learning tic tac toe   3 X 3
 
 if you select first oppnent = C (computer)
