@@ -227,13 +227,14 @@ display_lvl = 3
 print('\n\n\n')
 print(LOGO)
 player = PLAYER1
-opponent1 = input("for first opponent computer press C : ").upper()
-opponent2 = input("for second opponent computer press C : ").upper()
-# opponent1 = 'C'
-# opponent2 = 'C'
+# opponent1 = input("for first opponent computer press C : ").upper()
+# opponent2 = input("for second opponent computer press C : ").upper()
+opponent1 = 'C'
+opponent2 = 'C'
 if opponent1 == COMPUTER and opponent2 == COMPUTER:
     computer_playes = True
-    num_games = input("enter number of games for computer : ")
+    # num_games = input("enter number of games for computer : ")
+    num_games = "50"
     if num_games.isnumeric():
         num_games = int(num_games)
     else:

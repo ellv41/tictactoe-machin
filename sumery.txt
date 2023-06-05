@@ -1,0 +1,12 @@
+Games Sumery: 50 Games Plyed  p1=C p2=C
+X wins 6%
+O wins 86% 
+Draw  8% 
+Games Sumery: 50 Games Plyed  p1=C p2=C
+X wins 6%
+O wins 84% 
+Draw  10% 
+Games Sumery: 50 Games Plyed  p1=C p2=C
+X wins 2%
+O wins 78% 
+Draw  20% 
