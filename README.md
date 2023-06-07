@@ -50,3 +50,6 @@ player X will play like so :
 1 find the grade for each posible move
 2 get the move with the highest grade (grater the 0)
 3 if no good move found in the Data Base  play random move
+
+
+#####
